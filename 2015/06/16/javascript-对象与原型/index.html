@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>javascript-对象与原型 | 刘鹏的小站</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="理解对象:对象是一种风格， 和其它语言的类的概念相似，类中主要定义了一些基本属性和方法。当类被通过构造使用时，实例对象也会拥有一份新的属性和方法（但此处方法不会被重复创建，还是指向同一个地址）
+why？ 方法不需要被重复创建呢？首先，我们理解一个概念，所有语言中最终回转化成汇编执行，即便是动态语言，底层也会有汇编入栈，出栈的这种操作。
+当我们通过实例化的对象去调用的一个方法时，我们会取得当前方法的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="javascript-对象与原型">
+<meta property="og:url" content="http://yoursite.com/2015/06/16/javascript-对象与原型/index.html">
+<meta property="og:site_name" content="刘鹏的小站">
+<meta property="og:description" content="理解对象:对象是一种风格， 和其它语言的类的概念相似，类中主要定义了一些基本属性和方法。当类被通过构造使用时，实例对象也会拥有一份新的属性和方法（但此处方法不会被重复创建，还是指向同一个地址）
+why？ 方法不需要被重复创建呢？首先，我们理解一个概念，所有语言中最终回转化成汇编执行，即便是动态语言，底层也会有汇编入栈，出栈的这种操作。
+当我们通过实例化的对象去调用的一个方法时，我们会取得当前方法的">
+<meta property="og:updated_time" content="2015-07-26T19:22:49.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="javascript-对象与原型">
+<meta name="twitter:description" content="理解对象:对象是一种风格， 和其它语言的类的概念相似，类中主要定义了一些基本属性和方法。当类被通过构造使用时，实例对象也会拥有一份新的属性和方法（但此处方法不会被重复创建，还是指向同一个地址）
+why？ 方法不需要被重复创建呢？首先，我们理解一个概念，所有语言中最终回转化成汇编执行，即便是动态语言，底层也会有汇编入栈，出栈的这种操作。
+当我们通过实例化的对象去调用的一个方法时，我们会取得当前方法的">
+  
+    <link rel="alternative" href="/atom.xml" title="刘鹏的小站" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">刘鹏的小站</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">似水流连</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-javascript-对象与原型" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/16/javascript-对象与原型/" class="article-date">
+  <time datetime="2015-06-16T01:26:55.000Z" itemprop="datePublished">2015-06-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      javascript-对象与原型
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="理解对象:">理解对象:</h3><p>对象是一种风格， 和其它语言的类的概念相似，类中主要定义了一些基本属性和方法。<br>当类被通过构造使用时，实例对象也会拥有一份新的属性和方法（但此处方法不会被重复创建，还是指向同一个地址）</p>
+<p>why？ 方法不需要被重复创建呢？<br>首先，我们理解一个概念，所有语言中最终回转化成汇编执行，即便是动态语言，底层也会有汇编入栈，出栈的这种操作。</p>
+<p>当我们通过实例化的对象去调用的一个方法时，我们会取得当前方法的引用地址，并将参数一个个push进去，然后pop出结果即可， 所以说，完全不需要构造两个相同的方法，即使这样做了，也不会有什么影响，浪费内存空间而已。</p>
+<p>但变量一般都是copy创建的，我们当然不希望多个实例修改同一个变量，最终得到的变量是一样的吧，如果真的有这样需求，在其它语言中该变量用static定义，而在javascript中，那得用到prototype原型了，说白了，就是只定义一处，大家都使用同一份的方法。</p>
+<pre><code><span class="number">1.</span>工厂模式
+e.g.
+<span class="function"><span class="keyword">function</span> <span class="title">createPerson</span>(<span class="params">name, age, job</span>) </span>{
+    <span class="keyword">var</span> o = <span class="keyword">new</span> <span class="built_in">Object</span>();
+    o.name = name;
+    o.age = age;
+    o.job = job;
+    o.sayName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+        alert(<span class="keyword">this</span>.name);
+    };
+    <span class="keyword">return</span> o;
+}
+
+<span class="keyword">var</span> person1 = createPerson(<span class="string">'Nicholas'</span>, <span class="number">29</span>, <span class="string">'Software Enginner'</span>);
+<span class="keyword">var</span> person2 = createPerson(<span class="string">'Grey'</span>, <span class="number">27</span>, <span class="string">'Doctor'</span>);
+
+问题:
+     <span class="number">1.</span> 每次创建方法都是一份新的地址 （重复）
+     <span class="number">2.</span> 没有知道该对象的具体类型，也就缺乏了内省机制，好比如说，你问它，你是谁？ 它说不知道。但如果它知道自身是什么，那么那就可以做很多事情了。 python和ruby就完全具备此特性
+</code></pre><p><br></p>
+<pre><code>2.构造函数模式
+e.g. 
+function <span class="keyword">Person</span>(name, age, job) {
+    this.name = name;
+    this.age = age;
+    this.job = job;
+    this.sayName = function() {
+        alert(this.name);
+    };
+}
+
+var person1 = new <span class="keyword">Person</span>('Nicholas', 29, 'Software Engineer');
+var person2 = new <span class="keyword">Person</span>('Greg', 27, 'Doctor');
+
+问题:
+    1. 每次创建方法都是一份新的地址 （重复）
+
+注: 此时使用构造函数方式创建对象时，对象内部会有一个constructor（构造属性）指向<span class="keyword">Person</span>，表明时通过谁来创建的。 但constructor并不是实例的属性，它是指向<span class="keyword">Person</span>原型的属性（即共用一份内存地址的属性）
+</code></pre><p><br></p>
+<pre><code>3.原型模式:
+e.g.
+function <span class="keyword">Person</span>() {
+}
+
+<span class="keyword">Person</span>.prototype.name = 'Nicholas';
+<span class="keyword">Person</span>.prototype.age = 29;
+<span class="keyword">Person</span>.prototype.job = 'Software Engineer';
+<span class="keyword">Person</span>.prototype.sayName = function() {
+    alert(this.name);
+};
+
+var person1 = new <span class="keyword">Person</span>();
+person1.sayName();            //Nicholas
+
+var person2 = new <span class="keyword">Person</span>();
+person2.sayName();            //Nicholas
+alert(person1.sayName == person2.sayName); // true
+
+好处:
+    1.解决了多次创建同一份地址方法
+
+问题: 
+    1.无法通过构造进行传参
+
+
+3.1 字面量方式-1:
+e.g.
+function <span class="keyword">Person</span>() {
+}
+
+<span class="keyword">Person</span>.prototype = {
+    name: 'Nicholas',
+    age: 29,
+    job: 'Software Engineer',
+    sayName: function() {
+        alert(this.name);
+    }
+}
+
+好处: 
+    1.不用每次敲一遍<span class="keyword">Person</span>.prototype
+
+问题:
+    1.无法通过构造进行传参
+    2.由于重写了默认的prototype, 即通过{}方式重新定义的对象， 因此，constructor属性也就变成了新的constructor属性，（指向了Object构造属性）,不在指向<span class="keyword">Person</span>函数
+
+3.2 字面量方式-2:
+e.g.
+funciton <span class="keyword">Person</span>() {
+}
+
+<span class="keyword">Person</span>.prototype = {
+    constructor: <span class="keyword">Person</span>,
+    name: 'Nicholas',
+    age: 29,
+    job: 'Software Engineer',
+    sayName: function() {
+        alert(this.name);
+    }
+}
+
+好处: 
+    1.不用每次敲一遍<span class="keyword">Person</span>.prototype
+
+问题:
+    1.无法通过构造进行传参
+
+
+3.3 字面量方式-3:
+e.g.
+function <span class="keyword">Person</span>() {
+}
+
+<span class="keyword">Person</span>.prototype = {
+    constructor: <span class="keyword">Person</span>,
+    name: 'Nicholas',
+    age: 29,
+    job: 'Software Engineer',
+    friends: <span class="comment">['Shelby', 'Court']</span>,
+    sayName: function() {
+        alert(this.name);
+    }
+}
+
+var person1 = new <span class="keyword">Person</span>();
+var person2 = new <span class="keyword">person</span>();
+
+person1.friend.push('Van');
+alert(person1.friends);   //'Shelby,Court,Van'
+alert(person2.friends);   //'Shelby,Court,Van'
+alert(person1.friends === person2.friends); //true
+
+
+好处: 
+    1.不用每次敲一遍<span class="keyword">Person</span>.prototype
+
+问题:
+    1.无法通过构造进行传参
+    2.由于在原型中使用了引用类型的属性，通过实例修改时，会影响到其它实例。但如果设计目的就是如何，便不再是问题
+</code></pre><p><br></p>
+<pre><code>4.组合使用构造函数模式和原型模式
+e.g.
+function <span class="keyword">Person</span>(name, age, job) {
+    this.name = name;
+    this.age = age;
+    this.job = job;
+    this.friends = <span class="comment">['Shelby', 'Count']</span>;
+}
+
+<span class="keyword">Person</span>.prototype = {
+    constructor: <span class="keyword">Person</span>,
+    sayName: function() {
+        alert(this.name);
+    }
+}
+
+var person1 = new <span class="keyword">Person</span>('Nicholas', 29, 'Software Engineer');
+var person2 = new <span class="keyword">Person</span>('Greg', 27, 'Doctor');
+
+person1.friends.push('Van');
+alert(person1.friends);   //'Shelby,Count,Van'
+alert(person2.friends);   //'Shelby,Count'
+alert(person1.friends === person2.friends); //false
+alert(person1.sayName === person2.sayName); //true
+
+优点：
+    1.解决了构造函数传值的问题
+    2.使用了简化版的字面量方式
+    3.方法在内存中只存在一份
+    4.引用类型不再共享一份。
+
+这种模式堪称完美
+</code></pre><p><br></p>
+<pre><code>5. 动态原型模式
+e.g.
+function <span class="keyword">Person</span>(name, age, job) {
+    this.name = name;
+    this.age = age;
+    this.job = job;
+
+    if (typeof this.sayName != 'function') {
+        <span class="keyword">Person</span>.prototype.sayName = function() {
+            alert(this.name);
+        };
+    }
+}
+
+优点: 
+    1. 变量的定义和方法都存在一个函数内，和其它包含class风格的语言更加接近
+
+缺点:
+    1. 使用这种方式时， 无法使用字面量方式重写原型方法，如果已经创建了实例的情况下重写原型，就会先切现有实例和新原型之间的联系。（所以说，这种方式不用自面量就好了）
+
+经典模式之一    
+</code></pre><p><br></p>
+<pre><code>6. 寄生构造函数模式
+e.g.
+function <span class="keyword">Person</span>(name, age, job) {
+    var o = new Object();
+    o.name = name;
+    o.age = age;
+    o.job = job;
+    o.sayName = function() {
+        alert(this.name);
+    };
+    return o
+}
+
+var friend = new <span class="keyword">Person</span>('Nicholas', 29, 'Software Engineer');
+friend.sayName(); //'Nicholas'
+
+注: 对于此模式，目前还未充分认识其价值，或许其中也蕴含宝藏，暂不评论
+</code></pre><p><br></p>
+<pre><code>7. 稳妥构造函数模式
+e.g.
+function <span class="keyword">Person</span>(name, age, job) {
+    var o = new Object();
+    o.sayName = function() {
+        alert(name);
+    };
+    return o;
+}
+
+var friend = <span class="keyword">Person</span>('Nicholas', 29, 'Software Enginner');
+friend.sayName();
+
+注: 暂不评论
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/06/16/javascript-对象与原型/" data-id="cickvtj58000t95z9dm84t65r" class="article-share-link">Share</a>
+      
+        <a href="http://yoursite.com/2015/06/16/javascript-对象与原型/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/06/16/javascript-继承/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          javascript-继承
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/06/15/javascript-数据属性-访问器属性/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">javascript-数据属性&amp;访问器属性</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">golang</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/">javascript</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/regex/">regex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">vagrant</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/匆匆那年/">匆匆那年</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发编程/">并发编程</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/golang/" style="font-size: 20px;">golang</a> <a href="/tags/javascript/" style="font-size: 15px;">javascript</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/regex/" style="font-size: 10px;">regex</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/vagrant/" style="font-size: 10px;">vagrant</a> <a href="/tags/匆匆那年/" style="font-size: 10px;">匆匆那年</a> <a href="/tags/并发编程/" style="font-size: 10px;">并发编程</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a><span class="archive-list-count">16</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/07/27/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2015/07/21/vagrant-开发环境配置/">vagrant 开发环境配置</a>
+          </li>
+        
+          <li>
+            <a href="/2015/07/17/golang-RWMutex/">golang-RWMutex</a>
+          </li>
+        
+          <li>
+            <a href="/2015/07/14/upstart-命令备忘/">upstart-命令备忘</a>
+          </li>
+        
+          <li>
+            <a href="/2015/07/14/docker-命令备忘/">docker-命令备忘</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 刘鹏<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'pengswift';
+  
+  var disqus_url = 'http://yoursite.com/2015/06/16/javascript-对象与原型/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

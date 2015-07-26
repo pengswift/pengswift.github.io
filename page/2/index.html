@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>刘鹏的小站</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="我想起那天夕阳下的奔跑,那是我逝去的青春">
+<meta property="og:type" content="website">
+<meta property="og:title" content="刘鹏的小站">
+<meta property="og:url" content="http://yoursite.com/page/2/index.html">
+<meta property="og:site_name" content="刘鹏的小站">
+<meta property="og:description" content="我想起那天夕阳下的奔跑,那是我逝去的青春">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="刘鹏的小站">
+<meta name="twitter:description" content="我想起那天夕阳下的奔跑,那是我逝去的青春">
+  
+    <link rel="alternative" href="/atom.xml" title="刘鹏的小站" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">刘鹏的小站</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">似水流连</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-golang-unsafe-Pointer" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/07/07/golang-unsafe-Pointer/" class="article-date">
+  <time datetime="2015-07-07T06:50:46.000Z" itemprop="datePublished">2015-07-07</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/07/07/golang-unsafe-Pointer/">golang-unsafe.Pointer</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="unsafe-Pointer">unsafe.Pointer</h3><p>含义: 类似C的void *, 在golang中用于各种指针转换的桥梁</p>
+<h3 id="unsafe-Pointer_与_uintptr">unsafe.Pointer 与 uintptr</h3><p>相同点: 两者都可以用于转换不同类型指针</p>
+<p>区别: uintptr 可用于指针运算，unsafe.Pointer 则不可以</p>
+<p>e.g.</p>
+<pre><code>package main
+
+<span class="built_in">import</span><span class="params">(
+    <span class="string">"fmt"</span>
+    <span class="string">"unsafe"</span>
+)</span> 
+
+type V struct {
+    i int32
+    j int64
+}
+
+func <span class="params">(this V)</span> PutI<span class="params">()</span> {
+    fmt.Printf<span class="params">(<span class="string">"i=%d\n"</span>, this.i)</span>
+}
+
+func <span class="params">(this V)</span> PutJ<span class="params">()</span> {
+    fmt.Printf<span class="params">(<span class="string">"j=%d\n"</span>, this.j)</span>
+}
+
+func main<span class="params">()</span> {
+    var v <span class="built_in">*</span>V = new<span class="params">(V)</span>
+    var i <span class="built_in">*</span>int32 = <span class="params">(*int32)</span><span class="params">(unsafe.Pointer<span class="params">(v)</span>)</span>
+    <span class="built_in">*</span>i = int32<span class="params">(<span class="number">98</span>)</span>
+    var j <span class="built_in">*</span>int64 = <span class="params">(*int64)</span><span class="params">(unsafe.Pointer<span class="params">(uintptr<span class="params">(unsafe.Pointer<span class="params">(v)</span>)</span> + uint    ptr<span class="params">(unsafe.Sizeof<span class="params">(int32<span class="params">(<span class="number">1</span>)</span>)</span>)</span>)</span>)</span>       
+    <span class="built_in">*</span>j = int64<span class="params">(<span class="number">123</span>)</span>
+    v.PutI<span class="params">()</span>
+    v.PutJ<span class="params">()</span>     
+}
+
+输出: 
+i=<span class="number">98</span>
+j=<span class="number">0</span>
+</code></pre><p><font color="red">注: </font>此处结果并不是我们想得到的结果, j值我们理想的值是123，但实际输出是0， 这是由于<font color="red">内存对齐规则</font>造成的</p>
+<p>内存对齐规则:<br>参考: <a href="http://www.cppblog.com/snailcong/archive/2009/03/16/76705.html" target="_blank" rel="external">http://www.cppblog.com/snailcong/archive/2009/03/16/76705.html</a></p>
+<p>因为内存对齐的影响， 结构体V中的i的占用8个字节，64位， 所以，要修改j的值， 指针要在i指针的基础上＋8个字节的长度， 也就是 unsafe.Sizeof(int64(1))</p>
+<p>即:<br>     var j <em>int64 = (</em>int64)(unsafe.Pointer(uintptr(unsafe.Pointer(v)) + uint    ptr(unsafe.Sizeof(int64(1)))))  </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/07/07/golang-unsafe-Pointer/" data-id="cickvtj5s001795z98mrioxap" class="article-share-link">Share</a>
+      
+        <a href="http://yoursite.com/2015/07/07/golang-unsafe-Pointer/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/golang/">golang</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-并发编程-基础摘要" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/07/04/并发编程-基础摘要/" class="article-date">
+  <time datetime="2015-07-04T09:23:27.000Z" itemprop="datePublished">2015-07-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/07/04/并发编程-基础摘要/">并发编程 - 基础摘要</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="并发不完全等于并行">并发不完全等于并行</h3><pre><code><span class="bullet">1. </span>当多个程序程序同时执行时，并且分别被不同的处理器进行处理时，这才是真正意义上的并行，好比，两辆车分别行驶在不同的马路上。
+<span class="bullet">2. </span>当并发的程序分别被执行在不同的通道上，即是并行(多核有可能）， 单核只能是并发
+<span class="bullet">3. </span>当只有一个处理器时，同时执行多个程序时，在任何一个时刻点上都只有一个程序在处理运行，但由于程序任务处于不停的切换调度当中，使得程序看起来时并行处理。我们称之为并发
+</code></pre><h3 id="IPC(进程间通讯)方式">IPC(进程间通讯)方式</h3><pre><code>1.基于通讯的<span class="tag">IPC</span>方式    
+    1<span class="class">.1</span> 数据传递 管道(<span class="tag">Pipe</span>)和消息队列(<span class="tag">Message</span> <span class="tag">Queue</span>)
+    1<span class="class">.2</span> 共享内存 (<span class="tag">Shared</span> <span class="tag">Memory</span>)
+
+2.基于信号的<span class="tag">IPC</span>方式
+    2<span class="class">.1</span> 唯一异步方式
+
+3.基于同步的<span class="tag">IPC</span>方式
+    3<span class="class">.1</span> 信号灯(<span class="tag">Semaphore</span>)
+</code></pre><h3 id="进程的状态">进程的状态</h3><pre><code><span class="number">1</span>.可运行状态<span class="params">(TASK_RUNNING, R)</span>
+    表示当时进程将要运行或正在CPU上运行, <span class="params">(注意: 该进程的运行时机是不确定的，取决于进程调度器， 因为单条线路上， 任何时刻时间点内， 可能当前进程时运行状态，但调度的是另一个运行状态的进程)</span>
+
+
+<span class="number">2</span>.可中断的睡眠状态<span class="params">(TASK_INTERRUPTIBLE, S)</span>
+    当前进程正在等待某个事件时会进入此状态，同时，该睡眠进程会被放入事件等待队列中， 当有事件发生时， 与之相关联的进程会被唤醒。 
+    比如，当前进程睡眠时，会讲当前进程的pid存放入到等待队列中，同时会与可以唤醒它的事件绑定在一起， 当事件发生时，通过便利事件等待队列，会获取需要激活的pid，激活即可。
+
+
+<span class="number">3</span>.不可中断的睡眠状态<span class="params">(TASK_UNINTERRUPTIBLE, D)</span>
+    与可中断的睡眠状态类似， 唯一区别的时，当该进程处于此状态时，此进程不会对任何信号作出响应，除非它自己完成自身绑定的事件，主动更改其状态。
+    比如，当前进程睡眠是为了等待IO事件的完成， 当IO事件完成后，会主动更改起状态。 在这里， 如果IO没有完成， 我们主动向改进程发送任何信号时， 它自身状态不会改变，但，可中断的可以时时改变，并不完全依赖事件回调。
+
+
+
+<span class="number">4</span>.暂停状态或跟踪状态<span class="params">(TASK_STOPPED或TASK_TRACED, T)</span>
+向进程发送 SIGSTOP信号就会使改进程进入暂停状态， （处于不可中断的睡眠状态不接受此改变）
+
+向进程发送 SIGCONT信号就会使改进程转向可运行状态，     
+
+<span class="number">5</span>.僵尸状态<span class="params">(TASK_DEAD-EXIT_ZOMBIE, Z)</span>
+处于此状态的进程即将要结束， 但部分信息被保留，等待父进程来为它《收拾》， 默认情况
+
+
+<span class="number">6</span>.退出状态<span class="params">(TASK_DEAD-EXIT_DEAD, X)</span>
+不保留任何信息， 非默认情况， <span class="number">2</span>种可能
+    <span class="number">1</span>.进程消亡时，显示的向父进程发送SIGCHLD信号， 我自己处理自己了，不劳烦父亲大人了
+    <span class="number">2</span>.进程分离， 子进程和父进程分别独立运行。我独立了，不用管我了。
+</code></pre><h3 id="虚拟地址">虚拟地址</h3><pre><code>虚拟地址由 用户空间和内核空间组成， 虚拟内存的最大容量与物理内存大小无关， 系统会虚拟化一块硬盘上的内存用作虚拟内存。所以说，如果用ssd，可大大提高速写速度
+</code></pre><h3 id="线程_（TID）">线程 （TID）</h3><pre><code>一个线程是某个进程中的一个控制流， 一个进程至少包含一个线程，一个进程的第一个线程会随着它的启动而闯将，这个线程被称之为主线程。
+
+创建线程: pthread_create
+
+终止线程: pthread_cancel
+
+连接终止的线程: pthread_join   连接子线程，当子线程运行结束之后，返回，执行清理操作， 否则阻塞，  如果不被连接，该线程一直处于僵尸状态，不会被系统回收，连接后，变成终止状态。可回收
+
+分离线程: phtread_detach  子线程独立处理，结束时自己清理, 非阻塞
+
+终止线程: pthread_<span class="built_in">exit</span>  结束自己， 
+</code></pre><h3 id="分时调度模型:">分时调度模型:</h3><p>指: 让所有线程轮流获的cpu的使用权，并且平均分配每个线程占用cpu的时间片</p>
+<h3 id="抢占式调度模型:">抢占式调度模型:</h3><p>指: 优先让可运行池中优先级高的线程占用CPU，如果可运行池中的线程优先级相同，就随机选择一个线程，使其占用CPU。处于运行的线程会一直运行，直到它不得不放弃CPU</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/07/04/并发编程-基础摘要/" data-id="cickvtj4c000695z9t49fyvzg" class="article-share-link">Share</a>
+      
+        <a href="http://yoursite.com/2015/07/04/并发编程-基础摘要/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/并发编程/">并发编程</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-正则表达式-记录" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/07/02/正则表达式-记录/" class="article-date">
+  <time datetime="2015-07-02T10:47:40.000Z" itemprop="datePublished">2015-07-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/07/02/正则表达式-记录/">正则表达式-记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>\b 单词的开头或结尾<br>\bhi\b</p>
+<p>\B \b 反义   </p>
+<p>. 除换行符以外的任意字符 (单个字符)</p>
+<ul>
+<li>连续重复任意次 （可能是0次）<br>\bhi\b.*\bLucy\b</li>
+</ul>
+<p>\d 数字<br>0\d\d-\d\d\d\d\d\d\d\d<br>0\d{2}-\d{8}</p>
+<p>\D \d反义</p>
+<p>\s 任意空白符(空格，制表符(Tab)，换行符，中文全角空格)<br>\S \s反义</p>
+<p>\w 字母 数字 下划线 汉字<br>\ba\w*\b</p>
+<p>\W \w反义</p>
+<p>＋ 重复任意次（不少于1次）</p>
+<p>^ 字符串开始<br>$ 字符串结束</p>
+<p>^\d{5,12}$</p>
+<p>? 重复零次或一次</p>
+<p>[aeiou]  匹配任意英文元音字母<br>[.?!]    匹配任意符号</p>
+<p>(\d{1,3}.){3}\d{1,3} 分组()</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/07/02/正则表达式-记录/" data-id="cickvtj48000395z9m3ggobv2" class="article-share-link">Share</a>
+      
+        <a href="http://yoursite.com/2015/07/02/正则表达式-记录/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/regex/">regex</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-mongo-操作集合" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/30/mongo-操作集合/" class="article-date">
+  <time datetime="2015-06-30T03:18:38.000Z" itemprop="datePublished">2015-06-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/30/mongo-操作集合/">mongo-操作集合</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>1.插入命令</p>
+<pre><code><span class="number">1.1</span> 单个插入
+db.foo.insert<span class="params">({<span class="string">"bar"</span>: <span class="string">"baz"</span>})</span>
+
+<span class="number">1.2</span> 批量插入
+db.foo.insert<span class="params">([{<span class="string">"_id"</span>: <span class="number">0</span>}, {<span class="string">"_id"</span> : <span class="number">1</span>}, {<span class="string">"_id"</span> : <span class="number">2</span>}])</span>
+</code></pre><p>2.删除命令</p>
+<pre><code>2.1 条件删除
+<span class="keyword">db</span>.foo.remove({<span class="string">"_id"</span>: 0})
+
+2.2 全部删除
+<span class="keyword">db</span>.foo.remove({})
+<span class="keyword">db</span>.foo.<span class="keyword">drop</span>()        <span class="comment">//快速删除</span>
+</code></pre><p>3.查询命令</p>
+<pre><code><span class="number">3.1</span> 单条查询
+db.foo.findOne<span class="params">({<span class="string">"_id"</span>: <span class="number">2</span>})</span>
+
+<span class="number">3.2</span> 查询过滤字段
+<span class="comment">//只显示 username, email 字段</span>
+db.foo.find<span class="params">({}, {<span class="string">"username"</span> : <span class="number">1</span>, <span class="string">"email"</span>: <span class="number">1</span>})</span>
+
+<span class="comment">//剔除字段</span>
+db.foo.find<span class="params">({}, {<span class="string">"fatal_weakness"</span>: <span class="number">0</span>})</span>
+
+<span class="number">3.3</span> 条件查询
+db.user.find<span class="params">({<span class="string">"age"</span>: {<span class="string">"$gte"</span>: <span class="number">18</span>, <span class="string">"$lte"</span>: <span class="number">30</span>}})</span>
+start = new Date<span class="params">(<span class="string">"01/01/2007"</span>)</span>
+db.users.find<span class="params">({<span class="string">"registered"</span>: {<span class="string">"$lt"</span>: start}})</span>
+</code></pre><p>4.更新命令</p>
+<pre><code>4.1 单条更新
+<span class="keyword">db</span>.foo.<span class="keyword">update</span>({<span class="string">"_id"</span>: 2},{<span class="string">"_id"</span>: 9})
+
+4.2 多条更新
+<span class="keyword">db</span>.foo.<span class="keyword">update</span>({<span class="string">"name"</span>: <span class="string">"liupeng"</span>},{<span class="label">$set</span>:{<span class="string">"name"</span>: <span class="string">"haha"</span>}}, false, true)
+
+注: 全部更新 必需配合<span class="label">$set</span>关键字, 最后一位必须是true
+</code></pre><p>5.$inc 修改器</p>
+<pre><code>5.1 单条inc
+<span class="keyword">db</span>.foo.insert({<span class="string">"url"</span>:<span class="string">"www.example.com"</span>, <span class="string">"pageviews"</span>: 53})
+<span class="keyword">db</span>.foo.<span class="keyword">update</span>({<span class="string">"url"</span>:<span class="string">"www.example.com"</span>}, {<span class="label">$inc</span>:{<span class="string">"pageviews"</span>: 1}})
+
+注: 属性不存在时，自动创建，  默认只取得最近一条匹配记录后返回
+</code></pre><p>6.$set 修改器</p>
+<pre><code>6.1 单条修改
+<span class="keyword">db</span>.foo.<span class="keyword">update</span>({<span class="string">"url"</span>:<span class="string">"www.example.com"</span>}, {<span class="label">$set</span>: {<span class="string">"favorite book"</span> : <span class="string">"Green Eggs and Ham"</span>}})
+
+<span class="keyword">db</span>.foo.<span class="keyword">update</span>({<span class="string">"url"</span>:<span class="string">"www.example.com"</span>}, {<span class="label">$set</span>: {<span class="string">"favorite book"</span> : [<span class="string">"Cat's Cradle"</span>,<span class="string">"Foundation Trilogy"</span>,<span class="string">"Ender's Game"</span>]}})
+
+6.2 取消属性
+<span class="keyword">db</span>.foo.<span class="keyword">update</span>({<span class="string">"url"</span>:<span class="string">"www.example.com"</span>}, {<span class="label">$unset</span>: {<span class="string">"favorite book"</span> : 1}})
+</code></pre><p>7.$push 修改器</p>
+<pre><code><span class="number">7.1</span> 添加数组元素
+db.blog.posts.update({<span class="string">"title"</span>:<span class="string">"A blog post"</span>},{<span class="string">"<span class="variable">$push</span>"</span>:{<span class="string">"comments"</span>: {<span class="string">"name"</span>:<span class="string">"joe"</span>,<span class="string">"email"</span>:<span class="string">"joe<span class="variable">@example</span>.com"</span>,<span class="string">"content"</span>:<span class="string">"nice post."</span>}}})
+</code></pre><p>8.$each 修改器</p>
+<pre><code><span class="number">8.1</span> 添加多个值
+db.blog.posts.update({<span class="string">"title"</span>:<span class="string">"A blog post"</span>},{<span class="string">"<span class="variable">$push</span>"</span>: {<span class="string">"hourly"</span>: {<span class="string">"<span class="variable">$each</span>"</span>: [<span class="number">567.776</span>, <span class="number">562.790</span>, <span class="number">559.123</span>]}}})
+</code></pre><p>9.$slice 修改器</p>
+<pre><code><span class="number">9.1</span> 添加指定数量的数组元素
+db.blog.posts.update({<span class="string">"title"</span>:<span class="string">"A blog post"</span>},{<span class="string">"<span class="variable">$push</span>"</span>: {<span class="string">"hourly"</span>: {<span class="string">"<span class="variable">$each</span>"</span>: [<span class="number">00</span>,<span class="number">11</span>,<span class="number">22</span>,<span class="number">33</span>,<span class="number">44</span>,<span class="number">55</span>,<span class="number">66</span>,<span class="number">77</span>,<span class="number">88</span>,<span class="number">99</span>],<span class="string">"<span class="variable">$slice</span>"</span>: -<span class="number">10</span>}}})
+
+注: 超过<span class="number">10</span>个数组时,前面的元素会舍去，保留最后的<span class="number">10</span>个元素，类似队列
+</code></pre><p>10.$sort 修改器</p>
+<pre><code><span class="number">10.1</span> 添加元素排序后保留
+db.blog.posts.update({<span class="string">"title"</span>:<span class="string">"A blog post"</span>},{<span class="string">"<span class="variable">$push</span>"</span>: {<span class="string">"top10"</span>: {<span class="string">"<span class="variable">$each</span>"</span>: [{<span class="string">"name"</span>: <span class="string">"Nightmare on Elm Street"</span>, <span class="string">"rating"</span> : <span class="number">3</span>}, {<span class="string">"name"</span>: <span class="string">"Saw"</span>, <span class="string">"rating"</span>: <span class="number">100</span>}],<span class="string">"<span class="variable">$slice</span>"</span>: -<span class="number">10</span>,<span class="string">"<span class="variable">$sort</span>"</span>:{<span class="string">"rating"</span> : -<span class="number">1</span>}}}})
+
+注: 先添加，在排序，根据排序字段， 保留前<span class="number">10</span>个
+</code></pre><p>11.$addToSet 修改器 （避免重复插入）</p>
+<pre><code><span class="number">1</span>.重复插入（会忽略）
+db.users.insert({<span class="string">"username"</span>:<span class="string">"joe"</span>,<span class="string">"emails"</span>:[<span class="string">"joe.example.com"</span>,<span class="string">"joe<span class="variable">@gmail</span>.com"</span>,<span class="string">"joe<span class="variable">@yahoo</span>.com"</span>]})
+db.users.update({<span class="string">"username"</span>:<span class="string">"joe"</span>}, {<span class="string">"<span class="variable">$addToSet</span>"</span>: {<span class="string">"emails"</span>:<span class="string">"joe<span class="variable">@gmail</span>.com"</span>}})
+
+<span class="number">2</span>.插入不同
+db.users.update({<span class="string">"username"</span>:<span class="string">"joe"</span>}, {<span class="string">"<span class="variable">$addToSet</span>"</span>: {<span class="string">"emails"</span>:<span class="string">"joe<span class="variable">@hotmail</span>.com"</span>}})    
+
+<span class="number">3</span>.<span class="variable">$each</span> 添加多个
+db.users.update({<span class="string">"username"</span>:<span class="string">"joe"</span>}, {<span class="string">"<span class="variable">$addToSet</span>"</span>: {<span class="string">"emails"</span>:{<span class="string">"<span class="variable">$each</span>"</span>: [<span class="string">"joe<span class="variable">@php</span>.net"</span>,<span class="string">"joe.example.com"</span>,<span class="string">"joe<span class="variable">@python</span>.org"</span>]}}})
+</code></pre><p>12.$pull 修改器 (移除特定元素)</p>
+<pre><code>1.<span class="label">$pull</span>
+<span class="keyword">db</span>.lists.insert({<span class="string">"todo"</span> : [<span class="string">"dishes"</span>, <span class="string">"laundry"</span>, <span class="string">"dry cleaning"</span>]})
+<span class="keyword">db</span>.lists.<span class="keyword">update</span>({}, {<span class="string">"$pull"</span> : {<span class="string">"todo"</span> : <span class="string">"laundry"</span>}})
+</code></pre><p>13.指定位置的数据修改器</p>
+<pre><code>1. 使用数组下标
+<span class="keyword">db</span>.blog.posts.insert({<span class="string">"content"</span>:<span class="string">"内容"</span>, comments:[{<span class="string">"comment"</span>: <span class="string">"good post"</span>, <span class="string">"author"</span>: <span class="string">"John"</span>, <span class="string">"votes"</span>: 0},{<span class="string">"comment"</span> : <span class="string">"i thought it was too short"</span>, <span class="string">"author"</span>: <span class="string">"Claire"</span>, <span class="string">"votes"</span>: 3},{<span class="string">"comment"</span> : <span class="string">"free watches"</span>, <span class="string">"author"</span> : <span class="string">"Alice"</span>, <span class="string">"votes"</span> : -1}]})
+
+<span class="keyword">db</span>.blog.posts.<span class="keyword">update</span>({<span class="string">"_id"</span>: ObjectId(<span class="string">"5593716bf9af3f13adea9c0b"</span>)}, {<span class="string">"$inc"</span> : {<span class="string">"comments.0.votes"</span>: 1}})
+
+2.不使用下标
+<span class="keyword">db</span>.blog.posts.<span class="keyword">update</span>({<span class="string">"comments.author"</span>: <span class="string">"John"</span>}, {<span class="string">"$set"</span> : {<span class="string">"comments.$.author"</span>: <span class="string">"Jim"</span>}})
+</code></pre><p>14.upsert更新，更新时如果没有找到文档，则已更新文档为基础，创建新的文档（原子性操作）</p>
+<pre><code>1.<span class="keyword">e</span>.<span class="keyword">g</span>.
+<span class="keyword">db</span>.users.<span class="keyword">update</span>({<span class="string">"rep"</span>: 25}, {<span class="label">$inc</span> : {<span class="string">"rep"</span>: 3}}, true)
+
+注: 开启条件是 第三个参数
+
+2. setOnInsert （只在创建时，设置值）
+<span class="keyword">db</span>.users.<span class="keyword">update</span>({},{<span class="string">"$setOnInsert"</span> : {<span class="string">"createdAt"</span>: new <span class="literal">Date</span>()}}, true)
+</code></pre><p>15.查看更新文档的数量</p>
+<pre><code><span class="number">1.</span>
+db.count.update({<span class="string">x :</span> <span class="number">1</span>}, {<span class="string">$inc :</span> {<span class="string">x :</span> <span class="number">1</span>}}, <span class="literal">true</span>, <span class="literal">true</span>)
+db.count.update({<span class="string">x :</span> <span class="number">1</span>}, {<span class="string">$inc :</span> {<span class="string">x :</span> <span class="number">1</span>}}, <span class="literal">true</span>, <span class="literal">true</span>)
+db.count.update({<span class="string">x :</span> <span class="number">1</span>}, {<span class="string">$inc :</span> {<span class="string">x :</span> <span class="number">1</span>}}, <span class="literal">true</span>, <span class="literal">true</span>)
+db.count.update({<span class="string">"x"</span>:<span class="number">2</span>},{<span class="string">"$set"</span>:{<span class="string">"x"</span>: <span class="number">10</span>}}, <span class="literal">false</span>, <span class="literal">true</span>)
+db.runCommand({<span class="string">getLastError :</span> <span class="number">1</span>})
+</code></pre><p>16.$in $or 查询</p>
+<pre><code><span class="number">1</span>.单键查询
+db.raffle.find({<span class="string">"ticket_no"</span> : {<span class="string">"<span class="variable">$in</span>"</span> : [<span class="number">725</span>, <span class="number">542</span>, <span class="number">390</span>]}})
+
+如果ticket_no 的值是 <span class="number">725</span>，<span class="number">542</span>， <span class="number">390</span> 其中一个，满足条件
+
+<span class="number">2</span>.多键查询
+db.raffle.find({<span class="string">"<span class="variable">$or</span>"</span> : [{<span class="string">"ticket_no"</span> : <span class="number">725</span>}, {<span class="string">"winner"</span> : <span class="literal">true</span>}]})
+
+如果ticket_no 是 <span class="number">725</span>， 或者 winner 是<span class="literal">true</span> 时， 满足条件
+</code></pre><p>11 索引 </p>
+<pre><code><span class="number">11.1</span> 单条
+db.users.ensureIndex<span class="params">({<span class="string">"username"</span> : <span class="number">1</span>})</span>
+
+<span class="number">11.2</span> 复合索引
+ db.users.ensureIndex<span class="params">({<span class="string">"age"</span>: <span class="number">1</span>, <span class="string">"username"</span>: <span class="number">1</span>})</span>
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/06/30/mongo-操作集合/" data-id="cickvtj4p000j95z96xdg01kh" class="article-share-link">Share</a>
+      
+        <a href="http://yoursite.com/2015/06/30/mongo-操作集合/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mongodb/">mongodb</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-golang-timer" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/29/golang-timer/" class="article-date">
+  <time datetime="2015-06-29T05:52:34.000Z" itemprop="datePublished">2015-06-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/29/golang-timer/">golang-timer</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Timer">Timer</h3><p>用途: 定时器</p>
+<pre><code>e.g.    
+
+方式<span class="number">1</span>:
+
+    <span class="built_in">time</span>.AfterFunc(<span class="number">5</span>*<span class="built_in">time</span>.<span class="built_in">Second</span>, func() {
+        fmt.Println(<span class="string">"expired"</span>)
+    })
+
+方式<span class="number">2</span>:
+
+    <span class="built_in">timer</span> := <span class="built_in">time</span>.NewTimer(<span class="number">5</span> * <span class="built_in">time</span>.<span class="built_in">Second</span>)
+    &lt;-<span class="built_in">timer</span>.C
+    fmt.Println(<span class="string">"expired"</span>)
+
+方式<span class="number">3</span>:
+
+    &lt;-<span class="built_in">time</span>.After(<span class="number">5</span> * <span class="built_in">time</span>.<span class="built_in">Second</span>)
+    fmt.Println(<span class="string">"expired"</span>)
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/06/29/golang-timer/" data-id="cickvtj5w001995z95ynembjf" class="article-share-link">Share</a>
+      
+        <a href="http://yoursite.com/2015/06/29/golang-timer/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/golang/">golang</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-golang-select" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/29/golang-select/" class="article-date">
+  <time datetime="2015-06-29T04:41:02.000Z" itemprop="datePublished">2015-06-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/29/golang-select/">golang-select</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Select:">Select:</h2><p>用途: 监听IO操作，当IO操作发生时，触发相应的动作, 与goroutine联合使用</p>
+<pre><code>e.g.
+
+package main
+<span class="keyword">import</span>(
+    <span class="string">"fmt"</span>
+    <span class="string">"time"</span>
+)
+
+<span class="func"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> {
+    <span class="built_in">c</span> := make(chan int)
+
+    go <span class="func"><span class="keyword">func</span><span class="params">()</span></span> {
+        time.<span class="type">Sleep</span>(<span class="number">5</span> * time.<span class="type">Second</span>)
+        <span class="built_in">c</span> &lt;- <span class="number">10</span>
+    }()
+
+    <span class="keyword">for</span> {
+        select {
+            <span class="keyword">case</span> &lt;-<span class="built_in">c</span>:
+            fmt.<span class="type">Print</span>(<span class="string">"trigger from chan C"</span>)
+            <span class="keyword">return</span>
+        }
+    }
+}
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/06/29/golang-select/" data-id="cickvtj65001f95z9womhvehh" class="article-share-link">Share</a>
+      
+        <a href="http://yoursite.com/2015/06/29/golang-select/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/golang/">golang</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-golang-sync-Mutex" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/28/golang-sync-Mutex/" class="article-date">
+  <time datetime="2015-06-28T15:13:22.000Z" itemprop="datePublished">2015-06-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/28/golang-sync-Mutex/">golang-sync.Mutex</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Mutex<br>用途: 排它锁, 有锁定和未锁定状态， 当处于锁定状态时， 其它尝试进行的锁定操作都被等待，直到解锁</p>
+<pre><code>package main
+<span class="built_in">import</span> <span class="params">(
+    <span class="string">"fmt"</span>
+    <span class="string">"sync"</span>
+    <span class="string">"time"</span>
+)</span>
+
+var m <span class="built_in">*</span>sync.Mutex
+
+func main<span class="params">()</span> {
+     m = new<span class="params">(sync.Mutex)</span>
+    go lock<span class="params">(<span class="number">1</span>)</span>
+       time.Sleep<span class="params">(time.Second)</span>
+    lock<span class="params">(<span class="number">2</span>)</span>
+    fmt.Printf<span class="params">(<span class="string">"%s\n"</span>, <span class="string">"exit!"</span>)</span>
+}
+
+func lock<span class="params">(i int)</span> {
+    println<span class="params">(i, <span class="string">"lock start"</span>)</span>
+    m.Lock<span class="params">()</span>
+    println<span class="params">(i, <span class="string">"lock"</span>)</span>
+    time.Sleep<span class="params">(<span class="number">10</span> * time.Second)</span>
+    m.Unlock<span class="params">()</span>
+    println<span class="params">(i, <span class="string">"unlock"</span>)</span>
+}
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/06/28/golang-sync-Mutex/" data-id="cickvtj62001d95z90339rdy5" class="article-share-link">Share</a>
+      
+        <a href="http://yoursite.com/2015/06/28/golang-sync-Mutex/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/golang/">golang</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-golang-pprof性能监控" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/27/golang-pprof性能监控/" class="article-date">
+  <time datetime="2015-06-27T15:59:47.000Z" itemprop="datePublished">2015-06-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/27/golang-pprof性能监控/">golang-pprof性能监控</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>web服务器:</p>
+<pre><code>import <span class="list">(
+    <span class="keyword">_</span> <span class="string">"net/http/pprof"</span> 
+)</span>
+</code></pre><p>服务进程（游戏服务）</p>
+<pre><code><span class="built_in">import</span> <span class="params">(
+    _ <span class="string">"net/http/pprof"</span> 
+)</span>
+
+go func<span class="params">()</span> {
+    <span class="built_in">log</span>.Println<span class="params">(http.ListenAndServe<span class="params">(<span class="string">"localhost:6060"</span>, nil)</span>)</span> 
+}<span class="params">()</span>
+</code></pre><p>访问地址: <a href="http://localhost:port/debug/pprof/" target="_blank" rel="external">http://localhost:port/debug/pprof/</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/06/27/golang-pprof性能监控/" data-id="cickvtj68001h95z9cl3mm8iq" class="article-share-link">Share</a>
+      
+        <a href="http://yoursite.com/2015/06/27/golang-pprof性能监控/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/golang/">golang</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-golang-sync-WaitGroup" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/27/golang-sync-WaitGroup/" class="article-date">
+  <time datetime="2015-06-27T14:23:55.000Z" itemprop="datePublished">2015-06-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/27/golang-sync-WaitGroup/">golang-sync WaitGroup</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="WaitGroup">WaitGroup</h2><p>用途: 它能够等到所有goroutine执行完成,并 <font color="red"><strong>阻塞</strong></font> 主线程的执行，直到所有goroutine执行完成</p>
+<p>在一个任务 依赖 其它多个任务的执行结果时， 并且其它任务是各自互不依赖，各自独立，就能最大发挥并行的优势， 此时主线程是阻塞的</p>
+<p>WaitGroup方法</p>
+<pre><code><span class="attribute">1.Add</span>: <span class="string">添加或者减少等待goroutine的数量</span>
+
+<span class="http"><span class="attribute">2.Done</span>: <span class="string">同 Add(-1)</span>
+
+<span class="http"><span class="attribute">3.Wait</span>: <span class="string">执行阻塞， 直到所有WaitGroup数量变成 0 </span>
+
+<span class="openscad">e.g.
+
+package main
+<span class="built_in">import</span> <span class="params">(
+   <span class="string">"fmt"</span>
+   <span class="string">"sync"</span>
+   <span class="string">"time"</span>
+)</span>
+
+func main<span class="params">()</span> {
+    var wg sync.WaitGroup
+    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ {
+        wg.Add<span class="params">(<span class="number">1</span>)</span>
+        go func<span class="params">(n int)</span> {
+            defer wg.Add<span class="params">(-<span class="number">1</span>)</span>
+            EchoNumber<span class="params">(n)</span>
+        }<span class="params">(i)</span>
+    }
+    wg.Wait<span class="params">()</span>
+}
+
+func EchoNumber<span class="params">(i int)</span> {
+    time.Sleep<span class="params">(<span class="number">3e9</span>)</span>
+    fmt.Println<span class="params">(i)</span>
+}</span></span></span>
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/06/27/golang-sync-WaitGroup/" data-id="cickvtj60001b95z9rl6phqh9" class="article-share-link">Share</a>
+      
+        <a href="http://yoursite.com/2015/06/27/golang-sync-WaitGroup/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/golang/">golang</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-function与感叹号" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/21/function与感叹号/" class="article-date">
+  <time datetime="2015-06-21T15:59:44.000Z" itemprop="datePublished">2015-06-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/21/function与感叹号/">function与感叹号</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>e.g.</p>
+<pre><code><span class="built_in">!</span><span class="function"><span class="keyword">function</span><span class="params">()</span>{</span> alert<span class="params">(<span class="string">"hello"</span>)</span>}<span class="params">()</span>
+
+equals:     
+
+<span class="params">(function<span class="params">()</span>{alert<span class="params">(<span class="string">"hello"</span>)</span>})</span><span class="params">()</span>
+
+equals:
+
+<span class="params">(function<span class="params">()</span>{alert<span class="params">(<span class="string">"hello"</span>)</span>}<span class="params">()</span>)</span>
+</code></pre><h3 id="共同目的:将函数声明转化成表达式，在进行函数调用">共同目的:将函数声明转化成表达式，在进行函数调用</h3><p>参考:<a href="http://swordair.com/function-and-exclamation-mark/" target="_blank" rel="external">http://swordair.com/function-and-exclamation-mark/</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/06/21/function与感叹号/" data-id="cickvtj6l001r95z95ojtwnkx" class="article-share-link">Share</a>
+      
+        <a href="http://yoursite.com/2015/06/21/function与感叹号/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+  
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+    </nav>
+  
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">golang</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/">javascript</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/regex/">regex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">vagrant</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/匆匆那年/">匆匆那年</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发编程/">并发编程</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/golang/" style="font-size: 20px;">golang</a> <a href="/tags/javascript/" style="font-size: 15px;">javascript</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/regex/" style="font-size: 10px;">regex</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/vagrant/" style="font-size: 10px;">vagrant</a> <a href="/tags/匆匆那年/" style="font-size: 10px;">匆匆那年</a> <a href="/tags/并发编程/" style="font-size: 10px;">并发编程</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a><span class="archive-list-count">16</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/07/27/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2015/07/21/vagrant-开发环境配置/">vagrant 开发环境配置</a>
+          </li>
+        
+          <li>
+            <a href="/2015/07/17/golang-RWMutex/">golang-RWMutex</a>
+          </li>
+        
+          <li>
+            <a href="/2015/07/14/upstart-命令备忘/">upstart-命令备忘</a>
+          </li>
+        
+          <li>
+            <a href="/2015/07/14/docker-命令备忘/">docker-命令备忘</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 刘鹏<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'pengswift';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>javascript-数据属性&amp;访问器属性 | 刘鹏的小站</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="作用：主要用于定义变量的权限 （可读，可写，可删除，可枚举）
+在其它语言中，比如java， 对于class类中变量需要设置其get， set方法，这样做的目的是出于安全考虑， 仅能调用由class暴露出来的方法。
+并且可以在方法内对变量进行其它操作，修改其内容或者内部的其它变量。当然，这其实也是非必需的。如swift语言中新出的计算属性这个新词
+比如lua语言中，并没有要求要对变量设置其get,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="javascript-数据属性&访问器属性">
+<meta property="og:url" content="http://yoursite.com/2015/06/15/javascript-数据属性-访问器属性/index.html">
+<meta property="og:site_name" content="刘鹏的小站">
+<meta property="og:description" content="作用：主要用于定义变量的权限 （可读，可写，可删除，可枚举）
+在其它语言中，比如java， 对于class类中变量需要设置其get， set方法，这样做的目的是出于安全考虑， 仅能调用由class暴露出来的方法。
+并且可以在方法内对变量进行其它操作，修改其内容或者内部的其它变量。当然，这其实也是非必需的。如swift语言中新出的计算属性这个新词
+比如lua语言中，并没有要求要对变量设置其get,">
+<meta property="og:updated_time" content="2015-07-26T19:22:49.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="javascript-数据属性&访问器属性">
+<meta name="twitter:description" content="作用：主要用于定义变量的权限 （可读，可写，可删除，可枚举）
+在其它语言中，比如java， 对于class类中变量需要设置其get， set方法，这样做的目的是出于安全考虑， 仅能调用由class暴露出来的方法。
+并且可以在方法内对变量进行其它操作，修改其内容或者内部的其它变量。当然，这其实也是非必需的。如swift语言中新出的计算属性这个新词
+比如lua语言中，并没有要求要对变量设置其get,">
+  
+    <link rel="alternative" href="/atom.xml" title="刘鹏的小站" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">刘鹏的小站</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">似水流连</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-javascript-数据属性-访问器属性" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/15/javascript-数据属性-访问器属性/" class="article-date">
+  <time datetime="2015-06-15T14:45:32.000Z" itemprop="datePublished">2015-06-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      javascript-数据属性&amp;访问器属性
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>作用：主要用于定义变量的权限 （可读，可写，可删除，可枚举）</p>
+<p>在其它语言中，比如java， 对于class类中变量需要设置其get， set方法，<br>这样做的目的是出于安全考虑， 仅能调用由class暴露出来的方法。<br></p>
+<p>并且可以在方法内对变量进行其它操作，修改其内容或者内部的其它变量。当然，这其实也是非必需的。如swift语言中新出的计算属性这个新词<br></p>
+<p>比如lua语言中，并没有要求要对变量设置其get, set属性， 在需要的时候，可以直接修改其内容，只要不进行一些我们自己都不能确定的操作，程序依然是健壮的。当然，这里完全是由人来控制。</p>
+<p>object-c语言中， 如果想访问一个受保护的变量， 还可以通过kvc，kvo的方式</p>
+<p>总值，javasript的数值属性，访问器属性只是一种对变量进行权限约定和对象的变量进行添加，修改的一种手段， 在合适的时候使用即可</p>
+<pre><code>1. 数值属性
+    行为特征：
+    1.1 <span class="comment">[<span class="comment">[Configurable]</span>]</span>  是否可删除
+    1.2 <span class="comment">[<span class="comment">[Enumerable]</span>]</span>    是否可遍历
+    1.3 <span class="comment">[<span class="comment">[Writable]</span>]</span>      是否可写
+    1.4 <span class="comment">[<span class="comment">[Value]</span>]</span>          属性值， 默认undefined
+
+    e.g.
+    var <span class="keyword">person</span> = {};
+    Object.defineProperty(<span class="keyword">person</span>, 'name', {
+        writable: false,
+        value: 'Nicholas'
+    });
+
+    alert(<span class="keyword">person</span>.name); //'Nicholas'
+    <span class="keyword">person</span>.name = 'Greg';
+    alert(<span class="keyword">person</span>.name); //'Nicholas'
+
+
+2. 访问器属性
+    行为特征:
+    2.1 <span class="comment">[<span class="comment">[Configurable]</span>]</span>  是否可删除
+    2.2 <span class="comment">[<span class="comment">[Enumerable]</span>]</span>    是否可遍历
+    2.3 <span class="comment">[<span class="comment">[Get]</span>]</span>              读取属性时调用的方法   默认 underfined
+    2.4 <span class="comment">[<span class="comment">[Set]</span>]</span>              写入属性行调用的方法   默认 underfined
+
+    e.g.
+    var book = {
+        _year: 2004,
+        edition: 1
+    };
+
+    Object.defineProerty(book, 'year', {
+        get: function() {
+            return this._year;
+        },
+        set: function(newValue) {
+            if (newValue &gt; 2004) {
+                this._year = newValue;
+                this._edition += newValue - 2004;
+            }
+        }
+    });
+
+    book.year = 20005; 
+    alert(book.edition); //2
+</code></pre><p>注： 当通过数据属性或访问器的重新定义变量时， Configurable， Enumerable，Writable 默认值全部都重设为false， 不使用，默认是true</p>
+<pre><code>多属性定义方法
+<span class="keyword">var</span> book = {};
+Object.defineProperties(book, {
+    _year: {
+        value: <span class="number">2004</span>
+    },
+
+    edition: {
+        value: <span class="number">1</span>
+    },
+
+    year: {
+        <span class="keyword">get</span>: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{
+            <span class="keyword">return</span> <span class="keyword">this</span>._year;
+        },
+
+        <span class="keyword">set</span>: <span class="function"><span class="keyword">function</span><span class="params">(newValue)</span> </span>{
+            <span class="keyword">if</span> (newValue &gt; <span class="number">2004</span>) {
+                <span class="keyword">this</span>._year = newValue;
+                <span class="keyword">this</span>.edition += newValue - <span class="number">2004</span>;
+            }
+        }
+    }
+});
+
+
+属性特征读取方式
+<span class="keyword">var</span> descriptor = Object.getOwnPropertyDescriptor(book, <span class="string">'_year'</span>);
+alert(descriptor.value);        <span class="comment">//2004</span>
+alert(descriptor.configurable); <span class="comment">//false</span>
+alert(type description.<span class="keyword">get</span>);    <span class="comment">//'undefined'</span>
+
+<span class="keyword">var</span> descriptor = Object.getOwnPropertyDescriptor(book, <span class="string">'year'</span>);
+alert(descriptor.value);         <span class="comment">//undefined</span>
+alert(descriptor.enumerable);     <span class="comment">//false</span>
+alert(<span class="keyword">typeof</span> descriptor.<span class="keyword">get</span>);   <span class="comment">//'function'</span>
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/06/15/javascript-数据属性-访问器属性/" data-id="cickvtj55000r95z9380ikyes" class="article-share-link">Share</a>
+      
+        <a href="http://yoursite.com/2015/06/15/javascript-数据属性-访问器属性/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/06/16/javascript-对象与原型/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          javascript-对象与原型
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/06/15/javascript-函数属性callee-caller-apply-call-bind/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">javascript-函数属性callee, caller, apply, call, bind</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">golang</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/">javascript</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/regex/">regex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">vagrant</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/匆匆那年/">匆匆那年</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发编程/">并发编程</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/golang/" style="font-size: 20px;">golang</a> <a href="/tags/javascript/" style="font-size: 15px;">javascript</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/regex/" style="font-size: 10px;">regex</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/vagrant/" style="font-size: 10px;">vagrant</a> <a href="/tags/匆匆那年/" style="font-size: 10px;">匆匆那年</a> <a href="/tags/并发编程/" style="font-size: 10px;">并发编程</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a><span class="archive-list-count">16</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/07/27/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2015/07/21/vagrant-开发环境配置/">vagrant 开发环境配置</a>
+          </li>
+        
+          <li>
+            <a href="/2015/07/17/golang-RWMutex/">golang-RWMutex</a>
+          </li>
+        
+          <li>
+            <a href="/2015/07/14/upstart-命令备忘/">upstart-命令备忘</a>
+          </li>
+        
+          <li>
+            <a href="/2015/07/14/docker-命令备忘/">docker-命令备忘</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 刘鹏<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'pengswift';
+  
+  var disqus_url = 'http://yoursite.com/2015/06/15/javascript-数据属性-访问器属性/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>
